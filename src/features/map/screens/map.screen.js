@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import styled from "styled-components";
-import { Search } from "../../map/component/search.component";
 import { LocationContext } from "../../../services/location/location.context";
 import { RestaurantsContext } from "../../../services/restaurant/restaurant.context";
 
-const Map = styled(MapView)`
+import { Search } from "../component/search.component";
+
+const MapTag = styled(MapView)`
   height: 100%;
   width: 100%;
 `;
 
 export const MapScreen = () => {
   const { location } = useContext(LocationContext);
-  const { restauraants = [] } = useContext(RestaurantsContext);
+  const { restaurants = [] } = useContext(RestaurantsContext);
   const [latDelta, setLatDelta] = useState(0);
   const { lat, lng, viewport } = location;
   useEffect(() => {
@@ -24,7 +25,7 @@ export const MapScreen = () => {
   return (
     <>
       <Search />
-      <Map
+      <MapTag
         region={{
           latitude: lat,
           longitude: lng,
@@ -32,10 +33,20 @@ export const MapScreen = () => {
           longitudeDelta: 0.02,
         }}
       >
-        {restauraants.map((rest) => {
-          return null;
+        {restaurants.map((restaurant) => {
+          var coordinate = {
+            latitude: restaurant.geometry.location.lat,
+            longitude: restaurant.geometry.location.lng,
+          };
+          return (
+            <Marker
+              key={restaurant.name}
+              title={restaurant.name}
+              coordinate={coordinate}
+            />
+          );
         })}
-      </Map>
+      </MapTag>
     </>
   );
 };
